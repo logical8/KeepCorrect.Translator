@@ -8,16 +8,20 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.CodeDom.Compiler;
+using System.Configuration;
+using System.Runtime.CompilerServices;
+
 namespace KeepCorrect.Translator.Properties
 {
-    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute(
+    [CompilerGenerated()]
+    [GeneratedCode(
         "Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator",
         "11.0.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
+    internal sealed partial class Settings : ApplicationSettingsBase
     {
         private static Settings defaultInstance =
-            ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
+            ((Settings)(Synchronized(new Settings())));
 
         public static Settings Default
         {
