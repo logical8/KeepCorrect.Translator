@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using KeepCorrect.Translator.Extensions;
 using KeepCorrect.Translator.Properties;
 
 namespace KeepCorrect.Translator
@@ -59,12 +63,95 @@ namespace KeepCorrect.Translator
 
             //TODO: if (it is not text) return;
             if (text.Length > 100) return;
-            var result = await GetResult(text);
-            label1.Text = result;
+            ShowTranslates(await Search.GetSearchResult(text));
             if (WindowState == FormWindowState.Minimized)
                 WindowState = FormWindowState.Normal;
             SetDesktopLocation(Cursor.Position.X, Cursor.Position.Y);
             Activate();
+        }
+
+        private void ShowTranslates(SearchResult searchResult)
+        {
+            foreach (var control in Controls.OfType<TextBox>().ToList())
+            {
+                Controls.Remove(control);
+                control.Dispose();
+            }
+                    
+            var count = 0;
+            var height = 250;
+            var padding = 10;
+            var partsOfSpeech = searchResult.Word.PartsOfSpeech?.GetType()
+                .GetProperties()
+                .Where(p => p.GetValue(searchResult.Word.PartsOfSpeech, null) != null)
+                .Select(p => (Adjective)p.GetValue(searchResult.Word.PartsOfSpeech, null)) ?? new List<Adjective>();
+            foreach (var partOfSpeech in partsOfSpeech)
+            {
+                var textBoxWord = new TextBox();
+                textBoxWord.Text = partOfSpeech.Word;
+                textBoxWord.ReadOnly = true;
+                textBoxWord.BorderStyle = 0;
+                textBoxWord.BackColor = BackColor;
+                textBoxWord.TabStop = false;
+                textBoxWord.Font = new Font(textBoxWord.Font.FontFamily, 16, FontStyle.Bold);
+                textBoxWord.Size = new Size(500, 25);
+                textBoxWord.Location = new Point(padding, (10 + height) * count);
+                Controls.Add(textBoxWord);
+                
+                var textBox = new TextBox();
+                textBox.Text = partOfSpeech.PartOfSpeechRu;
+                textBox.ReadOnly = true;
+                textBox.BorderStyle = 0;
+                textBox.BackColor = BackColor;
+                textBox.TabStop = false;
+                textBox.Font = new Font(textBox.Font, FontStyle.Italic);
+                textBox.Size = new Size(500, 20);
+                textBox.Location = new Point(padding, 40 + (10 + height) * count);
+                Controls.Add(textBox);
+                count++;
+
+                var translationsTextBox = GetTranslateTextBox(partOfSpeech.Values.Select(v => v.ValueValue),
+                    new Point(textBox.Location.X, textBox.Location.Y + 25));
+                Controls.Add(translationsTextBox);
+                
+            }
+            // var t = searchResult.Word.PartsOfSpeech.Noun.
+            // Label[] labels = new Label[n];
+            //
+            // for (int i = 0; i < n; i++)
+            // {
+            //     textBoxes[i] = new TextBox();
+            //     // Here you can modify the value of the textbox which is at textBoxes[i]
+            //
+            //     labels[i] = new Label();
+            //     // Here you can modify the value of the label which is at labels[i]
+            // }
+            //
+            // // This adds the controls to the form (you will need to specify thier co-ordinates etc. first)
+            // for (int i = 0; i < n; i++)
+            // {
+            //     this.Controls.Add(textBoxes[i]);
+            //     this.Controls.Add(labels[i]);
+            // }
+        }
+
+        private Control GetTranslateTextBox(IEnumerable<string> translates, Point point)
+        {
+            var textBox = new TextBox();
+            textBox.ReadOnly = true;
+            textBox.BorderStyle = 0;
+            textBox.BackColor = BackColor;
+            textBox.TabStop = false;
+            textBox.Multiline = true;
+            textBox.Location = point;
+            textBox.Size = new Size(500, 190);
+            textBox.ScrollBars = ScrollBars.Vertical;
+            foreach (var translate in translates)
+            {
+                textBox.AppendLine($"– {translate}");
+            }
+
+            return textBox;
         }
 
         private async Task<string> GetResult(string text)

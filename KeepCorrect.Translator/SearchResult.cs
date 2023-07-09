@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace KeepCorrect.Translator
 {
@@ -29,7 +32,7 @@ namespace KeepCorrect.Translator
         public List<string> WordSpeakers { get; set; }
 
         [JsonProperty("word_speakers_slow")]
-        public List<object> WordSpeakersSlow { get; set; }
+        public List<string> WordSpeakersSlow { get; set; }
 
         [JsonProperty("hide_accents")]
         public HideAccents HideAccents { get; set; }
@@ -260,7 +263,7 @@ namespace KeepCorrect.Translator
         public string TranscriptionUs { get; set; }
 
         [JsonProperty("lemma_frequency_rank")]
-        public string LemmaFrequencyRank { get; set; }
+        public long LemmaFrequencyRank { get; set; }
 
         [JsonProperty("lemma_frequency_group")]
         public long LemmaFrequencyGroup { get; set; }
@@ -268,23 +271,32 @@ namespace KeepCorrect.Translator
 
     public partial class DefaultSynonymGroups
     {
-        [JsonProperty("anomaly")]
-        public long Anomaly { get; set; }
+        [JsonProperty("part")]
+        public long Part { get; set; }
     }
 
     public partial class DefaultTranslations
     {
-        [JsonProperty("anomaly")]
-        public string Anomaly { get; set; }
+        [JsonProperty("part")]
+        public string Part { get; set; }
     }
 
     public partial class PartsOfSpeech
     {
         [JsonProperty("noun")]
-        public Noun Noun { get; set; }
+        public Adjective Noun { get; set; }
+
+        [JsonProperty("adverb")]
+        public Adjective Adverb { get; set; }
+
+        [JsonProperty("adjective")]
+        public Adjective Adjective { get; set; }
+
+        [JsonProperty("verb")]
+        public Adjective Verb { get; set; }
     }
 
-    public partial class Noun
+    public partial class Adjective
     {
         [JsonProperty("c1")]
         public string C1 { get; set; }
@@ -352,7 +364,7 @@ namespace KeepCorrect.Translator
 
     public partial class Transcriptions
     {
-        [JsonProperty("anomaly")]
-        public Transcription Anomaly { get; set; }
+        [JsonProperty("part")]
+        public Transcription Part { get; set; }
     }
 }

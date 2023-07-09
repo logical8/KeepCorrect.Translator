@@ -31,33 +31,21 @@ namespace KeepCorrect.Translator
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.SuspendLayout();
-            // 
-            // label1
-            // 
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(368, 85);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Here will be translate";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(197, 53);
-            this.ControlBox = false;
-            this.Controls.Add(this.label1);
+            this.AutoScroll = true;
+            this.ClientSize = new System.Drawing.Size(817, 567);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "KeepCorrect.Translator";
             this.ResumeLayout(false);
         }
-
-        private System.Windows.Forms.Label label1;
 
         #endregion
     }
