@@ -93,6 +93,27 @@ namespace KeepCorrect.Translator
         // Unregisters the hot key with Windows.
         [DllImport("user32.dll")]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+        
+        [DllImport("User32.dll")] 
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
+        public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
+
+        public static void SendCtrlC(IntPtr hWnd)
+        {
+            uint KEYEVENTF_KEYUP = 2;
+            byte VK_CONTROL = 0x11;
+            SetForegroundWindow(hWnd);
+            keybd_event(VK_CONTROL,0,0,0);
+            keybd_event (0x43, 0, 0, 0 ); //Send the C key (43 is "C")
+            keybd_event (0x43, 0, KEYEVENTF_KEYUP, 0);
+            keybd_event (VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);// 'Left Control Up
+
+        }
 
         private sealed class InvisibleWindowForMessages : NativeWindow, IDisposable
         {

@@ -47,17 +47,32 @@ namespace KeepCorrect.Translator
 
         private async void ShowFormAndTranslate()
         {
+            var ptr = GlobalHotKey.GetForegroundWindow();
+            Thread.Sleep(200);
+            GlobalHotKey.SendCtrlC(ptr);
+            Thread.Sleep(100);
             // programatically copy selected text into clipboard
-            await System.Threading.Tasks.Task.Factory.StartNew(fetchSelectionToClipboard);
+            //await System.Threading.Tasks.Task.Factory.StartNew(fetchSelectionToClipboard);
 
             // access clipboard which now contains selected text in foreground window (active application)
-            var result = await System.Threading.Tasks.Task.Factory.StartNew(getClipBoardValue);
+            var text = await Task.Factory.StartNew(getClipBoardValue);
 
+            //TODO: if (it is not text) return;
+            if (text.Length > 100) return;
+            var result = await GetResult(text);
             label1.Text = result;
             if (WindowState == FormWindowState.Minimized)
                 WindowState = FormWindowState.Normal;
             SetDesktopLocation(Cursor.Position.X, Cursor.Position.Y);
             Activate();
+        }
+
+        private async Task<string> GetResult(string text)
+        {
+            var searchResult = await Search.GetSearchResult(text);
+            if (searchResult == null) return "Перевод не найден";
+
+            return $"{searchResult.Word.BaseWord} – {searchResult.Word.Translation}";
         }
 
         static void fetchSelectionToClipboard()
