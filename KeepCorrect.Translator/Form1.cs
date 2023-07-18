@@ -12,6 +12,8 @@ namespace KeepCorrect.Translator
 {
     public partial class Form1 : Form
     {
+        private const int padding = 10;
+
         public Form1()
         {
             InitializeComponent();
@@ -62,25 +64,55 @@ namespace KeepCorrect.Translator
             var text = await Task.Factory.StartNew(getClipBoardValue);
 
             //TODO: if (it is not text) return;
-            if (text.Length > 100) return;
-            ShowTranslates(await Search.GetSearchResult(text));
+            if (ItIsText(text))
+            {
+                ShowTranslateOfText(text);
+            }
+            else
+            {
+                if (text.Length > 100) return;
+                ShowTranslates(await Search.GetSearchResult(text));
+            }    
+            
             if (WindowState == FormWindowState.Minimized)
                 WindowState = FormWindowState.Normal;
             SetDesktopLocation(Cursor.Position.X, Cursor.Position.Y);
             Activate();
         }
 
+        private static bool ItIsText(string text)
+        {
+            return text.Trim().Any(ch => ch == ' ');
+        }
+
+        private void ShowTranslateOfText(string text)
+        {
+            CleanForm();
+
+            text = "test text for testing!";
+            
+            var textBoxWord = new TextBox();
+            textBoxWord.Text = text;
+            textBoxWord.ReadOnly = true;
+            textBoxWord.BorderStyle = 0;
+            textBoxWord.BackColor = BackColor;
+            textBoxWord.TabStop = false;
+            textBoxWord.Font = new Font(textBoxWord.Font.FontFamily, 16, FontStyle.Regular);
+            textBoxWord.Size = new Size(500, 500);
+            textBoxWord.Multiline = true;
+            textBoxWord.ScrollBars = ScrollBars.Vertical;
+            textBoxWord.Location = new Point(padding, padding);
+            Controls.Add(textBoxWord);
+        }
+        
+
         private void ShowTranslates(SearchResult searchResult)
         {
-            foreach (var control in Controls.OfType<TextBox>().ToList())
-            {
-                Controls.Remove(control);
-                control.Dispose();
-            }
+            CleanForm();
                     
             var count = 0;
             var height = 250;
-            var padding = 10;
+            
             var partsOfSpeech = searchResult.Word.PartsOfSpeech?.GetType()
                 .GetProperties()
                 .Where(p => p.GetValue(searchResult.Word.PartsOfSpeech, null) != null)
@@ -133,6 +165,15 @@ namespace KeepCorrect.Translator
             //     this.Controls.Add(textBoxes[i]);
             //     this.Controls.Add(labels[i]);
             // }
+        }
+
+        private void CleanForm()
+        {
+            foreach (var control in Controls.OfType<TextBox>().ToList())
+            {
+                Controls.Remove(control);
+                control.Dispose();
+            }
         }
 
         private Control GetTranslateTextBox(IEnumerable<string> translates, Point point)
