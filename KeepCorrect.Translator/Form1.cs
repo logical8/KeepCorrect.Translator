@@ -5,8 +5,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Flurl;
+using Flurl.Http;
 using KeepCorrect.Translator.Extensions;
 using KeepCorrect.Translator.Properties;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace KeepCorrect.Translator
 {
@@ -66,7 +70,7 @@ namespace KeepCorrect.Translator
             //TODO: if (it is not text) return;
             if (ItIsText(text))
             {
-                ShowTranslateOfText(text);
+                ShowTranslateOfText(await GetTranslate(text));
             }
             else
             {
@@ -80,6 +84,28 @@ namespace KeepCorrect.Translator
             Activate();
         }
 
+        private async Task<string> GetTranslate(string text)
+        {
+            try
+            {
+                var @string = await "https://translate.googleapis.com"
+                    .AppendPathSegments("translate_a", "single")
+                    .SetQueryParam("client", "gtx")
+                    .SetQueryParam("sl", "en")
+                    .SetQueryParam("tl", "ru")
+                    .SetQueryParam("dt", "t")
+                    .SetQueryParam("q", text)
+                    .GetStringAsync();
+                var jsonObj = (JArray)JsonConvert.DeserializeObject(@string);
+                return string.Join("", jsonObj[0].Select(t=>t[0]));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+        }
+
         private static bool ItIsText(string text)
         {
             return text.Trim().Any(ch => ch == ' ');
@@ -88,8 +114,6 @@ namespace KeepCorrect.Translator
         private void ShowTranslateOfText(string text)
         {
             CleanForm();
-
-            text = "test text for testing!";
             
             var textBoxWord = new TextBox();
             textBoxWord.Text = text;
